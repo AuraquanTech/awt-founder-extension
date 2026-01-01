@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Founder Add-on: Prompt Manager
  * ===============================
  * Cross-platform prompt library with:
@@ -16,7 +16,8 @@
  * Privacy: Local-only storage (chrome.storage.local)
  */
 
-import { contextExtractor } from "./context-extractor.js";
+// Memory Graph Integration - replaces simple context extraction with persistent semantic memory
+import { memoryBridge, contextExtractor } from "../memory/memory-bridge.js";
 
 export const meta = {
   id: "founder-prompt-manager",
@@ -328,10 +329,10 @@ function getDefaultTemplates() {
     { id: "tpl_prod_2", name: "Decision Matrix", category: "Productivity", tags: ["decision", "analysis"], content: "Help me decide between options:\n\nDecision: {{decision}}\nOptions: {{options}}\nImportant factors: {{factors}}\nConstraints: {{constraints}}", variables: ["decision", "options", "factors", "constraints"], type: "single" },
 
     // Smart Context Templates (showcase auto-fill feature)
-    { id: "tpl_smart_1", name: "⚡ Fix My Error", category: "Smart Context", tags: ["error", "debug", "auto"], content: "I'm getting this error in my {{language}} code:\n\nError: {{error}}\n\nHere's the code:\n```{{language}}\n{{code}}\n```\n\nPlease explain what's wrong and how to fix it.", variables: ["language", "error", "code"], type: "single" },
-    { id: "tpl_smart_2", name: "⚡ Review My Code", category: "Smart Context", tags: ["review", "auto"], content: "Please review this {{language}} code using {{framework}}:\n\n```{{language}}\n{{code}}\n```\n\nFocus on best practices, potential bugs, and performance.", variables: ["language", "framework", "code"], type: "single" },
-    { id: "tpl_smart_3", name: "⚡ Continue This Feature", category: "Smart Context", tags: ["continue", "goal", "auto"], content: "I'm working on: {{goal}}\n\nHere's what I have so far:\n```{{language}}\n{{code}}\n```\n\nPlease help me complete this implementation.", variables: ["goal", "language", "code"], type: "single" },
-    { id: "tpl_smart_4", name: "⚡ Explain This Code", category: "Smart Context", tags: ["explain", "learn", "auto"], content: "Explain this {{language}} code step by step:\n\n```{{language}}\n{{code}}\n```\n\nI'm particularly interested in understanding {{topic}}.", variables: ["language", "code", "topic"], type: "single" },
+    { id: "tpl_smart_1", name: "âš¡ Fix My Error", category: "Smart Context", tags: ["error", "debug", "auto"], content: "I'm getting this error in my {{language}} code:\n\nError: {{error}}\n\nHere's the code:\n```{{language}}\n{{code}}\n```\n\nPlease explain what's wrong and how to fix it.", variables: ["language", "error", "code"], type: "single" },
+    { id: "tpl_smart_2", name: "âš¡ Review My Code", category: "Smart Context", tags: ["review", "auto"], content: "Please review this {{language}} code using {{framework}}:\n\n```{{language}}\n{{code}}\n```\n\nFocus on best practices, potential bugs, and performance.", variables: ["language", "framework", "code"], type: "single" },
+    { id: "tpl_smart_3", name: "âš¡ Continue This Feature", category: "Smart Context", tags: ["continue", "goal", "auto"], content: "I'm working on: {{goal}}\n\nHere's what I have so far:\n```{{language}}\n{{code}}\n```\n\nPlease help me complete this implementation.", variables: ["goal", "language", "code"], type: "single" },
+    { id: "tpl_smart_4", name: "âš¡ Explain This Code", category: "Smart Context", tags: ["explain", "learn", "auto"], content: "Explain this {{language}} code step by step:\n\n```{{language}}\n{{code}}\n```\n\nI'm particularly interested in understanding {{topic}}.", variables: ["language", "code", "topic"], type: "single" },
 
     // Layered Templates
     { id: "tpl_layer_1", name: "Layered: Expert Analysis", category: "Layered", tags: ["expert", "layered"], type: "layered", layers: [
@@ -1854,7 +1855,7 @@ function createToggleButton() {
   const btn = document.createElement("button");
   btn.id = "awt-pm-toggle";
   btn.type = "button";
-  btn.innerHTML = `<span>📝</span> Prompts`;
+  btn.innerHTML = `<span>ðŸ“</span> Prompts`;
   return btn;
 }
 
@@ -1864,13 +1865,13 @@ function createPanel() {
   panel.innerHTML = `
     <div class="awt-pm-header">
       <div class="awt-pm-title">
-        <span>📝</span> Prompt Manager
+        <span>ðŸ“</span> Prompt Manager
       </div>
       <div class="awt-pm-header-actions">
         <button class="awt-pm-icon-btn" data-action="create" title="Create New">+</button>
-        <button class="awt-pm-icon-btn" data-action="import" title="Import">⬆</button>
-        <button class="awt-pm-icon-btn" data-action="export" title="Export">⬇</button>
-        <button class="awt-pm-icon-btn" data-action="close" title="Close">✕</button>
+        <button class="awt-pm-icon-btn" data-action="import" title="Import">â¬†</button>
+        <button class="awt-pm-icon-btn" data-action="export" title="Export">â¬‡</button>
+        <button class="awt-pm-icon-btn" data-action="close" title="Close">âœ•</button>
       </div>
     </div>
 
@@ -1880,7 +1881,7 @@ function createPanel() {
 
     <div class="awt-pm-tabs">
       <button class="awt-pm-tab active" data-tab="all">All</button>
-      <button class="awt-pm-tab" data-tab="favorites">★</button>
+      <button class="awt-pm-tab" data-tab="favorites">â˜…</button>
       <button class="awt-pm-tab" data-tab="recents">Recent</button>
       <button class="awt-pm-tab" data-tab="workflows">Flows</button>
     </div>
@@ -1891,10 +1892,10 @@ function createPanel() {
 
     <div class="awt-pm-footer">
       <button class="awt-pm-footer-btn" data-action="builder">
-        <span>🔧</span> Builder
+        <span>ðŸ”§</span> Builder
       </button>
       <button class="awt-pm-footer-btn" data-action="workflow">
-        <span>⚡</span> Workflow
+        <span>âš¡</span> Workflow
       </button>
     </div>
   `;
@@ -1909,7 +1910,7 @@ function createModalOverlay() {
     <div class="awt-pm-modal" id="awt-pm-modal">
       <div class="awt-pm-modal-header">
         <div class="awt-pm-modal-title" id="awt-pm-modal-title">Modal</div>
-        <button class="awt-pm-icon-btn" data-action="close-modal">✕</button>
+        <button class="awt-pm-icon-btn" data-action="close-modal">âœ•</button>
       </div>
       <div class="awt-pm-modal-body" id="awt-pm-modal-body"></div>
       <div class="awt-pm-modal-footer" id="awt-pm-modal-footer"></div>
@@ -1950,6 +1951,14 @@ class PromptManager {
 
     // Load data
     await this.loadData();
+
+    // Initialize Memory Graph system for persistent context
+    try {
+      await memoryBridge.init();
+      console.log("[PromptManager] Memory Graph initialized");
+    } catch (err) {
+      console.warn("[PromptManager] Memory Graph init failed, using fallback:", err);
+    }
 
     // Position toggle button
     this.positionToggle();
@@ -2197,7 +2206,7 @@ class PromptManager {
     if (prompts.length === 0) {
       container.innerHTML = `
         <div class="awt-pm-empty">
-          <div class="awt-pm-empty-icon">📭</div>
+          <div class="awt-pm-empty-icon">ðŸ“­</div>
           <div class="awt-pm-empty-text">
             ${this.currentTab === "workflows" ? "No workflows yet" :
               this.currentTab === "favorites" ? "No favorites yet" :
@@ -2243,7 +2252,7 @@ class PromptManager {
           <div class="awt-pm-card-header">
             <div class="awt-pm-card-name">${esc(p.name)}</div>
             <span class="awt-pm-card-fav ${isFav ? "active" : ""}" data-fav-id="${esc(p.id)}">
-              ${isFav ? "★" : "☆"}
+              ${isFav ? "â˜…" : "â˜†"}
             </span>
           </div>
           <div class="awt-pm-card-preview">${esc(preview)}...</div>
@@ -2271,7 +2280,7 @@ class PromptManager {
         e.stopPropagation();
         const id = btn.dataset.favId;
         this.favorites = await toggleFavorite(id);
-        btn.textContent = this.favorites.includes(id) ? "★" : "☆";
+        btn.textContent = this.favorites.includes(id) ? "â˜…" : "â˜†";
         btn.classList.toggle("active", this.favorites.includes(id));
       });
     });
@@ -2321,7 +2330,16 @@ class PromptManager {
 
     try {
       context = contextExtractor.extract();
-      autoMappings = contextExtractor.mapVariablesToContext(variables, context);
+      const rawMappings = contextExtractor.mapVariablesToContext(variables, context);
+      
+      // Handle both old format (direct values) and new format (objects with .value)
+      for (const [key, val] of Object.entries(rawMappings)) {
+        if (val && typeof val === "object" && val.value !== undefined) {
+          autoMappings[key] = val.value;
+        } else if (val !== undefined && val !== null) {
+          autoMappings[key] = val;
+        }
+      }
       autoFilledCount = Object.keys(autoMappings).length;
     } catch (err) {
       console.warn("[Prompt Manager] Smart Context extraction failed:", err);
@@ -2331,7 +2349,7 @@ class PromptManager {
     // Build context banner if we detected anything useful
     const contextBanner = autoFilledCount > 0 ? `
       <div class="awt-pm-context-banner">
-        <span class="awt-pm-context-icon">✨</span>
+        <span class="awt-pm-context-icon">âœ¨</span>
         <span class="awt-pm-context-text">Smart Context detected ${autoFilledCount} variable${autoFilledCount > 1 ? 's' : ''} from your conversation!</span>
         <button class="awt-pm-context-clear" id="awt-pm-clear-all-auto">Clear All</button>
       </div>
@@ -2341,8 +2359,8 @@ class PromptManager {
     const varGroupsHtml = variables.map(v => {
       const autoValue = autoMappings[v];
       const isAutoFilled = autoValue !== undefined && autoValue !== '';
-      const badgeHtml = isAutoFilled ? `<span class="awt-pm-auto-badge">✨ auto-detected</span>` : '';
-      const clearBtnHtml = isAutoFilled ? `<button class="awt-pm-var-clear" data-clear-var="${esc(v)}" title="Clear auto-fill">✕</button>` : '';
+      const badgeHtml = isAutoFilled ? `<span class="awt-pm-auto-badge">âœ¨ auto-detected</span>` : '';
+      const clearBtnHtml = isAutoFilled ? `<button class="awt-pm-var-clear" data-clear-var="${esc(v)}" title="Clear auto-fill">âœ•</button>` : '';
 
       return `
         <div class="awt-pm-var-group ${isAutoFilled ? 'awt-pm-var-auto-filled' : ''}">
@@ -2464,7 +2482,7 @@ class PromptManager {
 
     // Show notification about auto-fills
     if (autoFilledCount > 0) {
-      this.api.notify(`✨ ${autoFilledCount} variable${autoFilledCount > 1 ? 's' : ''} auto-filled from conversation!`, "success");
+      this.api.notify(`âœ¨ ${autoFilledCount} variable${autoFilledCount > 1 ? 's' : ''} auto-filled from conversation!`, "success");
     }
 
     // Focus first NON-auto-filled input, or first input if all are filled
@@ -2580,10 +2598,10 @@ class PromptManager {
     const renderLayers = () => {
       return layers.sort((a, b) => a.order - b.order).map((l, i) => `
         <div class="awt-pm-layer" data-layer-id="${l.id}" draggable="true">
-          <div class="awt-pm-layer-handle">⋮⋮</div>
+          <div class="awt-pm-layer-handle">â‹®â‹®</div>
           <div class="awt-pm-layer-content" contenteditable="true">${esc(l.content)}</div>
           <div class="awt-pm-layer-actions">
-            <button class="awt-pm-layer-btn" data-layer-action="delete" title="Delete">✕</button>
+            <button class="awt-pm-layer-btn" data-layer-action="delete" title="Delete">âœ•</button>
           </div>
         </div>
       `).join("");
@@ -2690,10 +2708,10 @@ class PromptManager {
 
       const layerHtml = `
         <div class="awt-pm-layer" data-layer-id="${newLayer.id}" draggable="true">
-          <div class="awt-pm-layer-handle">⋮⋮</div>
+          <div class="awt-pm-layer-handle">â‹®â‹®</div>
           <div class="awt-pm-layer-content" contenteditable="true">${esc(newLayer.content)}</div>
           <div class="awt-pm-layer-actions">
-            <button class="awt-pm-layer-btn" data-layer-action="delete" title="Delete">✕</button>
+            <button class="awt-pm-layer-btn" data-layer-action="delete" title="Delete">âœ•</button>
           </div>
         </div>
       `;
@@ -2794,7 +2812,7 @@ class PromptManager {
           <div class="awt-pm-workflow-step">
             <div class="awt-pm-workflow-num">${i + 1}</div>
             <div class="awt-pm-workflow-name">${esc(prompt?.name || "Unknown")}</div>
-            <button class="awt-pm-layer-btn" data-remove-step="${i}">✕</button>
+            <button class="awt-pm-layer-btn" data-remove-step="${i}">âœ•</button>
           </div>
         `;
       }).join("");
