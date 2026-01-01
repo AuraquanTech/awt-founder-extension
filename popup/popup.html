@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="popup.css" />
+  <title>Superpower 2.0</title>
+</head>
+<body>
+  <div class="popup-container">
+    <div class="popup-header">
+      <div>
+        <div class="logo">💫 Superpower 2.0</div>
+        <div class="version" id="version"></div>
+      </div>
+      <button class="action-btn secondary" id="open-options" title="Options">⚙️</button>
+    </div>
+
+    <div class="popup-content">
+      <div class="status-section">
+        <div class="status-indicator">
+          <span class="status-dot" id="status-dot"></span>
+          <span class="status-text" id="status-text">Active</span>
+        </div>
+        <div class="quick-stats">
+          <div class="stat">
+            <div class="stat-value" id="stat-saved">0</div>
+            <div class="stat-label">Saved</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="stat-exports">0</div>
+            <div class="stat-label">Exports</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="stat-enabled">0</div>
+            <div class="stat-label">Enabled</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">⚡ Quick Actions</div>
+        <div class="action-grid">
+          <button class="action-btn primary" id="act-export-txt">Export TXT</button>
+          <button class="action-btn primary" id="act-export-md">Export MD</button>
+          <button class="action-btn primary" id="act-export-json">Export JSON</button>
+          <button class="action-btn secondary" id="act-save">Save</button>
+          <button class="action-btn secondary" id="act-copy-md">Copy MD</button>
+          <button class="action-btn secondary" id="act-run-now">Re-run</button>
+
+          <button class="action-btn secondary" id="act-open-palette">Palette</button>
+          <button class="action-btn secondary" id="act-open-search">Search</button>
+          <button class="action-btn secondary" id="act-send-tasks">Send Tasks</button>
+
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">🧩 Features</div>
+        <div class="feature-list" id="feature-list"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">🎨 Theme</div>
+        <div class="theme-selector">
+          <button class="theme-btn" data-theme="auto">Auto</button>
+          <button class="theme-btn" data-theme="light">Light</button>
+          <button class="theme-btn" data-theme="dark">Dark</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="popup-footer">
+      <div class="footer-text">Privacy-first • Local-only</div>
+      <div class="footer-links">
+        <a class="footer-link" href="#" id="link-github">GitHub</a>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

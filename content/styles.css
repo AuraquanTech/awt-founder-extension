@@ -1,0 +1,3 @@
+/* Minimal content styles for AWT scripts */
+.awt-hidden{display:none!important;}
+.awt-btn{font: 12px ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial; }

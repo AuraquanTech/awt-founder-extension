@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="options.css" />
+  <title>Superpower 2.0 Options</title>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Superpower ChatGPT 2.0</h1>
+    <div class="sub">Privacy-first local script runner + ChatGPT utilities</div>
+
+    <div class="card">
+      <h2>Global</h2>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <button id="toggle-global"></button>
+        <label>Theme:
+          <select id="theme">
+            <option value="auto">Auto</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </label>
+        <label>Default export:
+          <select id="defaultExportFormat">
+            <option value="txt">TXT</option>
+            <option value="md">Markdown</option>
+            <option value="json">JSON</option>
+          </select>
+        </label>
+        <button id="reset">Reset</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Scripts</h2>
+      <div id="scripts"></div>
+    </div>
+
+    
+    <div class="card">
+      <h2>Automation connectors</h2>
+      <div class="sub" style="margin-bottom:10px">Send artifacts to n8n / Zapier / Make via HTTPS webhooks. Local-only allowlist + optional HMAC signature.</div>
+
+      <div class="row" style="gap:10px;flex-wrap:wrap">
+        <input id="conn_name" placeholder="Connector name (e.g., n8n)" style="flex:1;min-width:180px;padding:10px;border:1px solid #e5e7eb;border-radius:10px" />
+        <input id="conn_url" placeholder="Webhook URL (https://...)" style="flex:2;min-width:260px;padding:10px;border:1px solid #e5e7eb;border-radius:10px" />
+      </div>
+
+      <div class="row" style="gap:10px;flex-wrap:wrap;margin-top:10px">
+        <input id="conn_secret" placeholder="Optional secret (HMAC SHA-256 signing)" style="flex:1;min-width:260px;padding:10px;border:1px solid #e5e7eb;border-radius:10px" />
+        <button id="conn_add">Add / Update</button>
+        <button id="conn_test">Test</button>
+      </div>
+
+      <div style="margin-top:10px">
+        <div class="sub">Custom headers (optional): one per line: <code>Header-Name: value</code></div>
+        <textarea id="conn_headers" rows="3" style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:10px"></textarea>
+      </div>
+
+      <div style="margin-top:12px">
+        <div id="connectors"></div>
+      </div>
+
+      <div style="margin-top:18px">
+        <h3 style="margin:0 0 8px 0;font-size:14px">Recent sends</h3>
+        <div id="jobs" class="sub"></div>
+      </div>
+    </div>
+<div class="card">
+      <h2>Saved conversations</h2>
+      <input id="q" placeholder="Search..." style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:10px" />
+      <div id="convs" style="margin-top:10px"></div>
+    </div>
+  </div>
+
+  <script type="module" src="options.js"></script>
+</body>
+</html>
